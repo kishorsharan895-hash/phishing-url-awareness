@@ -1,0 +1,36 @@
+# Phishing URL Awareness Checker
+
+## About
+A beginner-friendly Python cybersecurity project that checks URL text for common phishing warning signs.
+
+## Features
+- Detects unusually long URLs.
+- Identifies URLs containing an @ symbol.
+- Flags IP addresses used as hostnames.
+- Checks for excessive subdomains.
+- Detects punycode-style hostnames.
+- Warns about HTTP connections.
+
+## Technologies Used
+- Python 3
+- Regular Expressions (`re`)
+- URL Parsing (`urllib.parse`)
+
+## How to Run
+
+1. Install Python 3.
+2. Download or clone this repository.
+3. Open a terminal in the project folder.
+4. Run:
+
+```bash
+python phishing_checker.py
+```
+
+5. Enter a sample URL and review the warnings.
+
+## Disclaimer
+This is an educational tool. It checks URL text only and cannot confirm whether a website is safe or malicious. It does not open URLs.
+
+## Author
+Kishor Kumar
