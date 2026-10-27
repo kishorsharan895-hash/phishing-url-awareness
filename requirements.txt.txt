@@ -1,0 +1,103 @@
+
+from urllib.parse import urlparse
+import ipaddress
+import re
+
+
+def check_url(url):
+    warnings = []
+
+    url = url.strip()
+
+    if not url:
+        return ["Please enter a URL."]
+
+    if not re.match(r"^https?://", url, re.IGNORECASE):
+        url = "https://" + url
+
+    try:
+        parsed = urlparse(url)
+        hostname = parsed.hostname
+    except ValueError:
+        return ["Invalid URL format."]
+
+    if not hostname:
+        return ["Invalid URL: hostname not found."]
+
+    if len(url) > 100:
+        warnings.append("URL is unusually long.")
+
+    if "@" in parsed.netloc:
+        warnings.append("URL contains an @ symbol.")
+
+    try:
+        ipaddress.ip_address(hostname)
+        warnings.append("URL uses an IP address as its hostname.")
+    except ValueError:
+        pass
+
+    if hostname.startswith("xn--") or ".xn--" in hostname:
+        warnings.append("Hostname contains punycode.")
+
+    if hostname.count(".") >= 3:
+        warnings.append("URL contains multiple subdomains.")
+
+    suspicious_words = [
+        "login", "verify", "account",
+        "secure", "update", "password"
+    ]
+
+    found_words = [
+        word for word in suspicious_words
+        if word in url.lower()
+    ]
+
+    if found_words:
+        warnings.append(
+            "Suspicious keywords found: "
+            + ", ".join(found_words)
+        )
+
+    if parsed.scheme.lower() == "http":
+        warnings.append("URL uses HTTP instead of HTTPS.")
+
+    return warnings
+
+
+def main():
+    print("=" * 45)
+    print("     PHISHING URL AWARENESS CHECKER")
+    print("=" * 45)
+
+    url = input("Enter a URL to check: ")
+
+    warnings = check_url(url)
+
+    print("\n--- Scan Results ---")
+
+    if warnings == ["Please enter a URL."]:
+        print(warnings[0])
+        return
+
+    if warnings == ["Invalid URL format."]:
+        print(warnings[0])
+        return
+
+    if warnings == ["Invalid URL: hostname not found."]:
+        print(warnings[0])
+        return
+
+    if warnings:
+        print("Warning signs detected:")
+        for warning in warnings:
+            print(" -", warning)
+        print("\nBe cautious. Verify the website independently.")
+    else:
+        print("No obvious warning signs detected.")
+
+    print("\nNote: This tool cannot confirm whether a URL")
+    print("is safe or malicious.")
+
+
+if __name__ == "__main__":
+    main()
